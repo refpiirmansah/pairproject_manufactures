@@ -67,7 +67,7 @@ func Login(db *sql.DB, email string, password string) (entity.User, error) {
 		return entity.User{}, fmt.Errorf("email atau password salah")
 	}
 
-	if !CheckPassword(password, user.PasswordHash) {
+	if !CheckPassword(user.PasswordHash, password) {
 		return entity.User{}, fmt.Errorf("email atau password salah")
 	}
 

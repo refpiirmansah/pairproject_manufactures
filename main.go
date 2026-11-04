@@ -5,6 +5,7 @@ import (
 
 	"github.com/refpiirmansah/pairproject_manufactures/cli"
 	"github.com/refpiirmansah/pairproject_manufactures/configuration"
+	"github.com/refpiirmansah/pairproject_manufactures/handler"
 )
 
 func main() {
@@ -23,7 +24,17 @@ func main() {
 
 		switch pilihan {
 		case 1:
-			fmt.Println("Menu Login dipilih")
+			email, password := cli.GetLoginInput()
+
+			user, err := handler.Login(db, email, password)
+
+			if err != nil {
+				fmt.Println("Login gagal:", err)
+				continue
+			}
+
+			fmt.Println("Login berhasil!")
+			fmt.Println("Selamat datang,", user.Email)
 		case 0:
 			fmt.Println("Terima kasih sudah menggunakan BuildTech PC")
 			return

@@ -16,3 +16,18 @@ func GetMenuChoice() int {
 
 	return pilihan
 }
+
+func GetLoginInput() (string, string) {
+	var email string
+	var password string
+
+	fmt.Println("\n=== LOGIN BUILDTECH PC ===")
+
+	fmt.Print("Email: ")
+	fmt.Scanln(&email)
+
+	fmt.Print("Password: ")
+	fmt.Scanln(&password)
+
+	return email, password
+}
