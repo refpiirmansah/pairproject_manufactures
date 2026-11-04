@@ -8,12 +8,8 @@ import (
 
 func main() {
 	for {
-		var pilihan int
-
 		cli.ShowMenu()
-
-		fmt.Print("Pilih menu: ")
-		fmt.Scanln(&pilihan)
+		pilihan := cli.GetMenuChoice()
 
 		switch pilihan {
 		case 1:
