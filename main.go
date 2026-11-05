@@ -49,6 +49,12 @@ func main() {
 				pilihanDashboard := cli.GetMenuChoice()
 
 				switch pilihanDashboard {
+				case 1:
+					// ------Memanggil sub-menu CRUD Komponen-----
+					cli.ComponentMenu(db)
+				case 2:
+					// ------Memanggil sub-menu CRUD Produk------
+					cli.ProductMenu(db)
 				case 0:
 					fmt.Println("Logout berhasil!")
 					break
