@@ -82,6 +82,35 @@ func main() {
 							component.Price,
 						)
 					}
+
+				case 2:
+					products, err := handler.GetAllProducts(db)
+					if err != nil {
+						fmt.Println("Gagal mengambil data produk:", err)
+					}
+
+					if len(products) == 0 {
+						fmt.Println("Belum ada data produk")
+						continue
+					}
+
+					fmt.Println("\n=== DAFTAR PRODUK ===")
+					fmt.Println(strings.Repeat("-", 85))
+					fmt.Printf(
+						"%-5s | %-20s | %-30s | %-6s | %-12s\n",
+						"ID", "Nama", "Deskripsi", "Stok", "Harga",
+					)
+					for _, product := range products {
+						fmt.Printf(
+							"%-5d | %-20s | %-30s | %-6d | Rp%10.2f\n",
+							product.ID,
+							product.Name,
+							product.Description,
+							product.Stock,
+							product.Price,
+						)
+					}
+
 				case 7:
 					component := cli.GetComponentInput()
 
@@ -131,6 +160,54 @@ func main() {
 					}
 
 					fmt.Println("Komponen berhasil dihapus!")
+
+				case 10:
+					product := cli.GetProductInput()
+					err := handler.CreateProduct(db, product)
+					if err != nil {
+						fmt.Println("Gagal menambahkan product:", err)
+						continue
+					}
+
+					fmt.Println("product berhasil ditambahkan!")
+				case 11:
+					product := cli.GetUpdateProdukInput()
+
+					err := handler.UpdateProduct(db, product)
+					if err != nil {
+						fmt.Println("Gagal mengubah produk:", err)
+						continue
+					}
+					fmt.Println("produk berhasil diperbahui!")
+
+				case 12:
+					var id int
+					var konfirmasi string
+
+					fmt.Println("\n=== HAPUS PRODUK ===")
+					fmt.Print("Masukkan ID produk: ")
+
+					_, err := fmt.Scanln(&id)
+					if err != nil || id <= 0 {
+						fmt.Println("ID produk tidak valid")
+						continue
+					}
+
+					fmt.Printf("Yakin ingin menghapus produk ID %d? (y/n): ", id)
+					fmt.Scanln(&konfirmasi)
+
+					if konfirmasi != "y" {
+						fmt.Println("Penghapusan dibatalkan")
+						continue
+					}
+
+					err = handler.DeleteProduct(db, id)
+					if err != nil {
+						fmt.Println("Gagal menghapus produk:", err)
+						continue
+					}
+
+					fmt.Println("Produk berhasil dihapus!")
 
 				default:
 					fmt.Println("Fitur belum tersedia")

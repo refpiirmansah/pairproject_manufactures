@@ -47,6 +47,9 @@ func ShowDashboard() {
 	fmt.Println("7. Tambah Komponen")
 	fmt.Println("8. Update Komponen")
 	fmt.Println("9. Delete Komponen")
+	fmt.Println("10. Tambah Produk")
+	fmt.Println("11. Update Produk")
+	fmt.Println("12. Delete Produk")
 	fmt.Println("0. Logout")
 }
 
@@ -100,4 +103,47 @@ func ShowUpdateComponentMenu() {
 	fmt.Println("3. Stok")
 	fmt.Println("4. Harga")
 	fmt.Println("0. Batal")
+}
+
+func GetProductInput() entity.Product {
+	var product entity.Product
+
+	fmt.Println("\n=== TAMBAH PRODUK ===")
+
+	fmt.Print("Nama: ")
+	fmt.Scanln(&product.Name)
+
+	fmt.Print("Deskripsi: ")
+	fmt.Scanln(&product.Description)
+
+	fmt.Print("Harga: ")
+	fmt.Scanln(&product.Price)
+
+	fmt.Print("Stok: ")
+	fmt.Scanln(&product.Stock)
+
+	return product
+}
+
+func GetUpdateProdukInput() entity.Product {
+	var product entity.Product
+
+	fmt.Println("\n=== UPDATE PRODUK ===")
+
+	fmt.Print("ID Produk: ")
+	fmt.Scanln(&product.ID)
+
+	fmt.Print("Nama baru: ")
+	fmt.Scanln(&product.Name)
+
+	fmt.Print("Deskripsi baru: ")
+	fmt.Scanln(&product.Description)
+
+	fmt.Print("Stok baru: ")
+	fmt.Scanln(&product.Stock)
+
+	fmt.Print("Harga baru: ")
+	fmt.Scanln(&product.Price)
+
+	return product
 }
