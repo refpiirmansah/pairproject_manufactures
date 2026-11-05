@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/refpiirmansah/pairproject_manufactures/cli"
 	"github.com/refpiirmansah/pairproject_manufactures/configuration"
@@ -49,9 +50,48 @@ func main() {
 				pilihanDashboard := cli.GetMenuChoice()
 
 				switch pilihanDashboard {
-				case 0:
-					fmt.Println("Logout berhasil!")
-					break
+				case 1:
+					components, err := handler.GetAllComponents(db)
+
+					if err != nil {
+						fmt.Println("Gagal mengambil data komponen:", err)
+						continue
+					}
+
+					fmt.Println("\n=== DAFTAR KOMPONEN ===")
+
+					if len(components) == 0 {
+						fmt.Println("Belum ada data komponen")
+						continue
+					}
+
+					fmt.Printf(
+						"%-5s | %-20s | %-15s | %-6s | %-12s\n",
+						"ID", "Nama", "Kategori", "Stok", "Harga",
+					)
+
+					fmt.Println(strings.Repeat("-", 72))
+
+					for _, component := range components {
+						fmt.Printf(
+							"%-5d | %-20s | %-15s | %-6d | Rp%10.2f\n",
+							component.ID,
+							component.Name,
+							component.Category,
+							component.Stock,
+							component.Price,
+						)
+					}
+				case 7:
+					component := cli.GetComponentInput()
+
+					err := handler.CreateComponent(db, component)
+					if err != nil {
+						fmt.Println("Gagal menambahkan komponen:", err)
+						continue
+					}
+
+					fmt.Println("komponen berhasil ditambahkan!")
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}

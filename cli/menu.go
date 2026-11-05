@@ -1,6 +1,10 @@
 package cli
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/refpiirmansah/pairproject_manufactures/entity"
+)
 
 func ShowMenu() {
 	fmt.Println("\n=== BUILDTECH PC ===")
@@ -40,5 +44,26 @@ func ShowDashboard() {
 	fmt.Println("4. Kelola Pesanan")
 	fmt.Println("5. Kelola Perakitan")
 	fmt.Println("6. Laporan")
+	fmt.Println("7. Tambah Komponen")
 	fmt.Println("0. Logout")
+}
+
+func GetComponentInput() entity.Component {
+	var component entity.Component
+
+	fmt.Println("\n=== TAMBAH KOMPONEN ===")
+
+	fmt.Print("Nama: ")
+	fmt.Scanln(&component.Name)
+
+	fmt.Print("Kategori: ")
+	fmt.Scanln(&component.Category)
+
+	fmt.Print("Stok: ")
+	fmt.Scanln(&component.Stock)
+
+	fmt.Print("Harga: ")
+	fmt.Scanln(&component.Price)
+
+	return component
 }
