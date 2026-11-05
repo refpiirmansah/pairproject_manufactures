@@ -35,6 +35,23 @@ func main() {
 
 			fmt.Println("Login berhasil!")
 			fmt.Println("Selamat datang,", user.Email)
+
+			for {
+				cli.ShowDashboard()
+				pilihanDashboard := cli.GetMenuChoice()
+
+				switch pilihanDashboard {
+				case 0:
+					fmt.Println("Logout berhasil!")
+					break
+				default:
+					fmt.Println("Fitur belum tersedia")
+				}
+
+				if pilihanDashboard == 0 {
+					break
+				}
+			}
 		case 0:
 			fmt.Println("Terima kasih sudah menggunakan BuildTech PC")
 			return
