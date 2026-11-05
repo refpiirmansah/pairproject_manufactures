@@ -70,3 +70,66 @@ func CreateComponent(db *sql.DB, component entity.Component) error {
 
 	return err
 }
+
+func GetComponentByID(db *sql.DB, id int) (entity.Component, error) {
+	var component entity.Component
+
+	query := `SELECT id, name, category, stock, price FROM components WHERE id=?`
+
+	err := db.QueryRow(query, id).Scan(
+		&component.ID,
+		&component.Name,
+		&component.Category,
+		&component.Stock,
+		&component.Price,
+	)
+
+	if err != nil {
+		return entity.Component{}, err
+	}
+
+	return component, nil
+}
+
+func UpdateComponent(db *sql.DB, component entity.Component) error {
+	if component.ID < 0 {
+		return fmt.Errorf("ID komponen tidak valid")
+	}
+
+	if component.Name == "" || component.Category == "" {
+		return fmt.Errorf("Nama dan kategori wajib diisi")
+	}
+
+	if component.Stock < 0 || component.Stock < 0 {
+		return fmt.Errorf("Stok dan harga tidak boleh negatif")
+	}
+
+	query := `
+		UPDATE components 
+		SET name = ?, category = ?, stock = ?, price = ?
+		WHERE id = ?
+	`
+
+	result, err := db.Exec(
+		query,
+		component.Name,
+		component.Category,
+		component.Stock,
+		component.Price,
+		component.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return fmt.Errorf("Komponen dengan ID %d tidak ditemukan", component.ID)
+	}
+
+	return nil
+}

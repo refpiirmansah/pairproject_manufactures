@@ -92,6 +92,17 @@ func main() {
 					}
 
 					fmt.Println("komponen berhasil ditambahkan!")
+
+				case 8:
+					component := cli.GetUpdateComponentInput()
+
+					err := handler.UpdateComponent(db, component)
+					if err != nil {
+						fmt.Println("Gagal menguba komponen:", err)
+						continue
+					}
+					fmt.Println("komponen berhasil diperbahui!")
+
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}
@@ -99,6 +110,7 @@ func main() {
 				if pilihanDashboard == 0 {
 					break
 				}
+
 			}
 		case 0:
 			fmt.Println("Terima kasih sudah menggunakan BuildTech PC")

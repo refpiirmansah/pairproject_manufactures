@@ -45,6 +45,7 @@ func ShowDashboard() {
 	fmt.Println("5. Kelola Perakitan")
 	fmt.Println("6. Laporan")
 	fmt.Println("7. Tambah Komponen")
+	fmt.Println("8. Update Komponen")
 	fmt.Println("0. Logout")
 }
 
@@ -66,4 +67,36 @@ func GetComponentInput() entity.Component {
 	fmt.Scanln(&component.Price)
 
 	return component
+}
+
+func GetUpdateComponentInput() entity.Component {
+	var component entity.Component
+
+	fmt.Println("\n=== UPDATE KOMPONEN ===")
+
+	fmt.Print("ID Komponen: ")
+	fmt.Scanln(&component.ID)
+
+	fmt.Print("Nama baru: ")
+	fmt.Scanln(&component.Name)
+
+	fmt.Print("Kategori baru: ")
+	fmt.Scanln(&component.Category)
+
+	fmt.Print("Stok baru: ")
+	fmt.Scanln(&component.Stock)
+
+	fmt.Print("Harga baru: ")
+	fmt.Scanln(&component.Price)
+
+	return component
+}
+
+func ShowUpdateComponentMenu() {
+	fmt.Println("\n=== PILIH DATA YANG INGIN DIUBAH ===")
+	fmt.Println("1. Nama")
+	fmt.Println("2. Kategori")
+	fmt.Println("3. Stok")
+	fmt.Println("4. Harga")
+	fmt.Println("0. Batal")
 }
