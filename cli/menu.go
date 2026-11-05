@@ -46,6 +46,7 @@ func ShowDashboard() {
 	fmt.Println("6. Laporan")
 	fmt.Println("7. Tambah Komponen")
 	fmt.Println("8. Update Komponen")
+	fmt.Println("9. Delete Komponen")
 	fmt.Println("0. Logout")
 }
 

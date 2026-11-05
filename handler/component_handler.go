@@ -133,3 +133,26 @@ func UpdateComponent(db *sql.DB, component entity.Component) error {
 
 	return nil
 }
+
+func DeleteComponent(db *sql.DB, id int) error {
+	if id < 0 {
+		return fmt.Errorf("ID komponen tidak valid")
+	}
+
+	query := `DELETE FROM components WHERE id = ?`
+	result, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return fmt.Errorf("Komponen dengan ID %d tidak ditemukan", id)
+	}
+
+	return nil
+}

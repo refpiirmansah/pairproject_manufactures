@@ -98,10 +98,39 @@ func main() {
 
 					err := handler.UpdateComponent(db, component)
 					if err != nil {
-						fmt.Println("Gagal menguba komponen:", err)
+						fmt.Println("Gagal mengubah komponen:", err)
 						continue
 					}
 					fmt.Println("komponen berhasil diperbahui!")
+
+				case 9:
+					var id int
+					var konfirmasi string
+
+					fmt.Println("\n=== HAPUS KOMPONEN ===")
+					fmt.Print("Masukkan ID komponen: ")
+					_, err := fmt.Scanln(&id)
+
+					if err != nil || id <= 0 {
+						fmt.Println("ID komponen tidak valid")
+						continue
+					}
+
+					fmt.Printf("Yakin ingin menghapus komponen ID %d? (y/n): ", id)
+					fmt.Scanln(&konfirmasi)
+
+					if konfirmasi != "y" {
+						fmt.Println("Penghapusan dibatalkan")
+						continue
+					}
+
+					err = handler.DeleteComponent(db, id)
+					if err != nil {
+						fmt.Println("Gagal menghapus komponen:", err)
+						continue
+					}
+
+					fmt.Println("Komponen berhasil dihapus!")
 
 				default:
 					fmt.Println("Fitur belum tersedia")
