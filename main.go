@@ -18,6 +18,14 @@ func main() {
 
 	fmt.Println("Koneksi MySQL berhasil!")
 
+	// Buat user, jangan sampe di buka comment nya. nanti create user terus menerus
+	//err = handler.CreateUser(db, "admin1@gmail.com", "abc")
+	//if err != nil {
+	//	fmt.Println("Gagal membuat akun pengujian:", err)
+	//} else {
+	//	fmt.Println("Akun pengujian berhasil dibuat")
+	//}
+
 	for {
 		cli.ShowMenu()
 		pilihan := cli.GetMenuChoice()
