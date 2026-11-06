@@ -60,6 +60,7 @@ func ShowDashboard() {
 	fmt.Println("20. Cek Stok untuk Perakitan")
 	fmt.Println("21. Buat Pesanan")
 	fmt.Println("22. Update Status Pesanan")
+	fmt.Println("23. Hapus Pesanan")
 	fmt.Println("0. Logout")
 }
 

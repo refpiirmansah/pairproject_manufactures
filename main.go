@@ -415,6 +415,21 @@ func main() {
 					}
 
 					fmt.Println("Status pesanan berhasil diperbarui!")
+
+				case 23:
+					var orderID int
+
+					fmt.Println("\n=== HAPUS PESANAN ===")
+					fmt.Print("ID Pesanan yang ingin dihapus: ")
+					fmt.Scanln(&orderID)
+
+					err := handler.DeleteOrder(db, orderID)
+					if err != nil {
+						fmt.Println("Gagal menghapus pesanan:", err)
+						continue
+					}
+
+					fmt.Println("Order pesanan berhasil dihapus!")
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}

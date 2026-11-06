@@ -190,7 +190,7 @@ func UpdateOrderStatus(db *sql.DB, orderID int, status string) error {
 		return fmt.Errorf("status pesanan tidak valid")
 	}
 
-	query := `UPDATE orders SET status = ? WHERE order_id = ?`
+	query := `UPDATE orders SET status = ? WHERE id = ?`
 
 	result, err := db.Exec(query, status, orderID)
 	if err != nil {
@@ -207,4 +207,44 @@ func UpdateOrderStatus(db *sql.DB, orderID int, status string) error {
 	}
 
 	return nil
+}
+
+func DeleteOrder(db *sql.DB, orderID int) error {
+	if orderID <= 0 {
+		return fmt.Errorf("ID pesanan tidak valid")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	var status string
+	err = tx.QueryRow("SELECT status FROM orders WHERE id = ? FOR UPDATE", orderID).Scan(&status)
+	if err == sql.ErrNoRows {
+		return fmt.Errorf("pesanan tidak ditemukan")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	if status != "pending" {
+		return fmt.Errorf(
+			"hanya pesanan pending yang boleh dihapus",
+		)
+	}
+
+	_, err = tx.Exec("DELETE FROM order_items WHERE order_id = ?", orderID)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM orders WHERE id = ?", orderID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
