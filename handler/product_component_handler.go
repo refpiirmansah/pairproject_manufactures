@@ -137,3 +137,50 @@ func DeleteProductComponent(db *sql.DB, productID int, componentID int) error {
 
 	return nil
 }
+
+func ValidateRecipeStock(db *sql.DB, productID, totalPC int) error {
+	if productID <= 0 || totalPC <= 0 {
+		return fmt.Errorf("ID produk dan jumlah PC harus lebih dari 0")
+	}
+
+	query := `
+        SELECT c.name, c.stock, pc.quantity
+        FROM product_components pc
+        JOIN components c ON pc.component_id = c.id
+        WHERE pc.product_id = ?
+    `
+
+	rows, err := db.Query(query, productID)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	found := false
+	for rows.Next() {
+		found = true
+
+		var name string
+		var stock int
+		var quantityPerPC int
+
+		if err := rows.Scan(&name, &stock, &quantityPerPC); err != nil {
+			return err
+		}
+
+		if !ValidateComponentStock(stock, quantityPerPC, totalPC) {
+			return fmt.Errorf("stok %s tidak cukup untuk %d PC", name, totalPC)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if !found {
+		return fmt.Errorf("produk ini belum memiliki resep rakitan")
+	}
+
+	return nil
+}

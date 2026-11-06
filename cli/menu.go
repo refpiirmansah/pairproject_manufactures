@@ -57,6 +57,7 @@ func ShowDashboard() {
 	fmt.Println("17. Lihat Resep Rakitan")
 	fmt.Println("18. Update Resep Rakitan")
 	fmt.Println("19. Delete Resep Rakitan")
+	fmt.Println("20. Cek Stok untuk Perakitan")
 	fmt.Println("0. Logout")
 }
 

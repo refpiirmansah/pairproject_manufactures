@@ -100,8 +100,8 @@ func UpdateComponent(db *sql.DB, component entity.Component) error {
 		return fmt.Errorf("Nama dan kategori wajib diisi")
 	}
 
-	if component.Stock < 0 || component.Stock < 0 {
-		return fmt.Errorf("Stok dan harga tidak boleh negatif")
+	if component.Stock < 0 || component.Price < 0 {
+		return fmt.Errorf("stok dan harga tidak boleh negatif")
 	}
 
 	query := `
@@ -155,4 +155,14 @@ func DeleteComponent(db *sql.DB, id int) error {
 	}
 
 	return nil
+}
+
+func ValidateComponentStock(stock, quantityPerPC, totalPC int) bool {
+	if stock < 0 || quantityPerPC <= 0 || totalPC <= 0 {
+		return false
+	}
+
+	totalNeeded := quantityPerPC * totalPC
+
+	return stock >= totalNeeded
 }

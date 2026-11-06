@@ -360,6 +360,33 @@ func main() {
 					}
 
 					fmt.Println("Komponen berhasil dihapus dari resep!")
+				case 20:
+					var productID int
+					var totalPC int
+
+					fmt.Println("\n=== CEK STOK PERAKITAN ===")
+
+					fmt.Print("ID Produk: ")
+					_, err := fmt.Scanln(&productID)
+					if err != nil || productID <= 0 {
+						fmt.Println("ID produk tidak valid")
+						continue
+					}
+
+					fmt.Print("Jumlah PC yang ingin dirakit: ")
+					_, err = fmt.Scanln(&totalPC)
+					if err != nil || totalPC <= 0 {
+						fmt.Println("Jumlah PC harus lebih dari 0")
+						continue
+					}
+
+					err = handler.ValidateRecipeStock(db, productID, totalPC)
+					if err != nil {
+						fmt.Println("Stok tidak mencukupi:", err)
+						continue
+					}
+
+					fmt.Println("Stok semua komponen mencukupi untuk perakitan!")
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}
