@@ -133,6 +133,7 @@ func GetAllOrders(db *sql.DB) error {
         JOIN products p ON oi.product_id = p.id
         ORDER BY o.id
     `
+
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
@@ -151,7 +152,7 @@ func GetAllOrders(db *sql.DB) error {
 		var unitPrice float64
 		var status string
 
-		err = rows.Scan(&orderID, &customerName, &productName, &quantity, &unitPrice)
+		err = rows.Scan(&orderID, &customerName, &productName, &quantity, &unitPrice, &status)
 		if err != nil {
 			return err
 		}
@@ -175,6 +176,34 @@ func GetAllOrders(db *sql.DB) error {
 
 	if !found {
 		fmt.Println("Belum ada pesanan")
+	}
+
+	return nil
+}
+
+func UpdateOrderStatus(db *sql.DB, orderID int, status string) error {
+	if orderID <= 0 {
+		return fmt.Errorf("ID pesanan tidak valid")
+	}
+
+	if status != "pending" && status != "processing" && status != "completed" {
+		return fmt.Errorf("status pesanan tidak valid")
+	}
+
+	query := `UPDATE orders SET status = ? WHERE order_id = ?`
+
+	result, err := db.Exec(query, status, orderID)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return fmt.Errorf("pesanan tidak ditemukan atau status tidak berubah")
 	}
 
 	return nil

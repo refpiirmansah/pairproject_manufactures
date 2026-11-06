@@ -404,6 +404,17 @@ func main() {
 						continue
 					}
 					fmt.Printf("Pesanan berhasil dibuat! ID Pesanan: %d\n", orderID)
+
+				case 22:
+					orderID, status := cli.GetUpdateOrderStatusInput()
+
+					err := handler.UpdateOrderStatus(db, orderID, status)
+					if err != nil {
+						fmt.Println("Gagal memperbarui status pesanan:", err)
+						continue
+					}
+
+					fmt.Println("Status pesanan berhasil diperbarui!")
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}
