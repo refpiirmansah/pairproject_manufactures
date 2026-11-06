@@ -118,6 +118,64 @@ func CreateOrderWithItem(
 	return orderID, nil
 }
 
-//func GetAllOrders(db *sql.DB) error {
-//	query
-//}
+func GetAllOrders(db *sql.DB) error {
+	query := `
+        SELECT
+            o.id,
+            c.name,
+            p.name,
+            oi.quantity,
+            oi.unit_price,
+            o.status
+        FROM orders o
+        JOIN customers c ON o.customer_id = c.id
+        JOIN order_items oi ON o.id = oi.order_id
+        JOIN products p ON oi.product_id = p.id
+        ORDER BY o.id
+    `
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	fmt.Println("\n=== DAFTAR PESANAN ===")
+
+	found := false
+
+	for rows.Next() {
+		var orderID int
+		var customerName string
+		var productName string
+		var quantity int
+		var unitPrice float64
+		var status string
+
+		err = rows.Scan(&orderID, &customerName, &productName, &quantity, &unitPrice)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf(
+			"Order ID: %d | Pelanggan: %s | Produk: %s | Jumlah: %d | Harga: Rp%.2f | Status: %s\n",
+			orderID,
+			customerName,
+			productName,
+			quantity,
+			unitPrice,
+			status,
+		)
+
+		found = true
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if !found {
+		fmt.Println("Belum ada pesanan")
+	}
+
+	return nil
+}

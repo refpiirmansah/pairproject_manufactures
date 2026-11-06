@@ -141,6 +141,13 @@ func main() {
 						)
 					}
 
+				case 4:
+					err := handler.GetAllOrders(db)
+					if err != nil {
+						fmt.Println("Gagal mengambil daftar pesanan:", err)
+						continue
+					}
+
 				case 7:
 					component := cli.GetComponentInput()
 
