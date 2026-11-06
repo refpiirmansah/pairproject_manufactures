@@ -349,3 +349,102 @@ func GetAssemblyComponentNeedsTx(tx *sql.Tx, productID int, totalPC int) ([]enti
 
 	return components, nil
 }
+
+func GetAllAssemblies(db *sql.DB) error {
+	query := `
+        SELECT
+            a.id,
+            a.order_item_id,
+            p.name,
+            a.quantity,
+            a.status
+        FROM assemblies a
+        JOIN order_items oi
+            ON a.order_item_id = oi.id
+        JOIN products p
+            ON oi.product_id = p.id
+        ORDER BY a.id
+    `
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	fmt.Println("\n=== DAFTAR PERAKITAN ===")
+
+	found := false
+
+	for rows.Next() {
+		var assemblyID int
+		var orderItemID int
+		var productName string
+		var quantity int
+		var status string
+
+		err := rows.Scan(
+			&assemblyID,
+			&orderItemID,
+			&productName,
+			&quantity,
+			&status,
+		)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf(
+			"Assembly ID: %d | Order Item ID: %d | Produk: %s | Jumlah: %d | Status: %s\n",
+			assemblyID,
+			orderItemID,
+			productName,
+			quantity,
+			status,
+		)
+
+		found = true
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if !found {
+		fmt.Println("Belum ada perakitan")
+	}
+
+	return nil
+}
+
+func CompleteAssembly(db *sql.DB, assemblyID int) error {
+	if assemblyID <= 0 {
+		return fmt.Errorf("ID perakitan tidak valid")
+	}
+
+	query := `
+        UPDATE assemblies
+        SET status = 'completed',
+            end_date = NOW()
+        WHERE id = ?
+          AND status = 'processing'
+    `
+
+	result, err := db.Exec(query, assemblyID)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return fmt.Errorf(
+			"perakitan tidak ditemukan atau sudah selesai",
+		)
+	}
+
+	return nil
+}

@@ -248,3 +248,78 @@ func DeleteOrder(db *sql.DB, orderID int) error {
 
 	return tx.Commit()
 }
+
+func CompleteOrderIfReady(db *sql.DB, orderID int) error {
+	if orderID <= 0 {
+		return fmt.Errorf("ID pesanan tidak valid")
+	}
+
+	// Hitung jumlah detail pesanan yang belum selesai dirakit
+	var unfinished int
+
+	query := `
+        SELECT COUNT(*)
+        FROM order_items oi
+        LEFT JOIN assemblies a
+            ON a.order_item_id = oi.id
+        WHERE oi.order_id = ?
+          AND (
+              a.id IS NULL
+              OR a.status != 'completed'
+          )
+    `
+
+	err := db.QueryRow(query, orderID).Scan(&unfinished)
+	if err != nil {
+		return err
+	}
+
+	if unfinished > 0 {
+		return fmt.Errorf(
+			"masih ada produk dalam pesanan yang belum selesai dirakit",
+		)
+	}
+
+	// Ubah status pesanan jika semua perakitan selesai
+	result, err := db.Exec(
+		`UPDATE orders
+         SET status = 'completed'
+         WHERE id = ?
+           AND status = 'processing'
+           AND EXISTS (
+               SELECT 1
+               FROM order_items
+               WHERE order_id = ?
+           )
+           AND NOT EXISTS (
+               SELECT 1
+               FROM order_items oi
+               LEFT JOIN assemblies a
+                   ON a.order_item_id = oi.id
+               WHERE oi.order_id = ?
+                 AND (
+                     a.id IS NULL
+                     OR a.status != 'completed'
+                 )
+           )`,
+		orderID,
+		orderID,
+		orderID,
+	)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return fmt.Errorf(
+			"pesanan tidak ditemukan, belum diproses, atau belum siap diselesaikan",
+		)
+	}
+
+	return nil
+}

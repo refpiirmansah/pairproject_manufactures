@@ -148,6 +148,13 @@ func main() {
 						continue
 					}
 
+				case 5:
+					err := handler.GetAllAssemblies(db)
+					if err != nil {
+						fmt.Println("Gagal mengambil daftar perakitan:", err)
+						continue
+					}
+
 				case 7:
 					component := cli.GetComponentInput()
 
@@ -449,6 +456,35 @@ func main() {
 						assemblyID,
 					)
 
+				case 25:
+					var assemblyID int
+
+					fmt.Println("\n=== SELESAIKAN PERAKITAN ===")
+					fmt.Print("ID Perakitan: ")
+					fmt.Scanln(&assemblyID)
+
+					err := handler.CompleteAssembly(db, assemblyID)
+					if err != nil {
+						fmt.Println("Gagal menyelesaikan perakitan:", err)
+						continue
+					}
+
+					fmt.Println("Perakitan berhasil diselesaikan!")
+
+				case 26:
+					var orderID int
+
+					fmt.Println("\n=== SELESAIKAN PESANAN ===")
+					fmt.Print("ID Pesanan: ")
+					fmt.Scanln(&orderID)
+
+					err := handler.CompleteOrderIfReady(db, orderID)
+					if err != nil {
+						fmt.Println("Gagal menyelesaikan pesanan:", err)
+						continue
+					}
+
+					fmt.Println("Pesanan berhasil diselesaikan!")
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}
