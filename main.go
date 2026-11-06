@@ -155,6 +155,25 @@ func main() {
 						continue
 					}
 
+				case 6:
+					err := handler.GetSalesReport(db)
+					if err != nil {
+						fmt.Println("Gagal menampilkan laporan penjualan:", err)
+						continue
+					}
+
+					err = handler.GetAssemblyReport(db)
+					if err != nil {
+						fmt.Println("Gagal menampilkan laporan perakitan:", err)
+						continue
+					}
+
+					err = handler.GetComponentStockReport(db)
+					if err != nil {
+						fmt.Println("Gagal menampilkan laporan stok komponen:", err)
+						continue
+					}
+
 				case 7:
 					component := cli.GetComponentInput()
 
