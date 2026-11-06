@@ -325,6 +325,41 @@ func main() {
 
 					fmt.Println("Resep rakitan berhasil diperbahui!")
 
+				case 19:
+					var productID int
+					var componentID int
+					var konfirmasi string
+
+					fmt.Println("\n=== HAPUS RESEP RAKITAN ===")
+
+					fmt.Print("ID Produk: ")
+					_, err := fmt.Scanln(&productID)
+					if err != nil || productID <= 0 {
+						fmt.Println("ID produk tidak valid")
+						continue
+					}
+
+					fmt.Print("ID Komponen: ")
+					_, err = fmt.Scanln(&componentID)
+					if err != nil || componentID <= 0 {
+						fmt.Println("ID komponen tidak valid")
+						continue
+					}
+
+					fmt.Print("Yakin ingin menghapus komponen dari resep? (y/n): ")
+					_, err = fmt.Scanln(&konfirmasi)
+					if err != nil || konfirmasi != "y" {
+						fmt.Println("Penghapusan dibatalkan")
+						continue
+					}
+
+					err = handler.DeleteProductComponent(db, productID, componentID)
+					if err != nil {
+						fmt.Println("Gagal menghapus resep:", err)
+						continue
+					}
+
+					fmt.Println("Komponen berhasil dihapus dari resep!")
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}

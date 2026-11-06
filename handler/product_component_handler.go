@@ -110,3 +110,30 @@ func UpdateProductComponent(db *sql.DB, productID int, componentID int, quantity
 
 	return nil
 }
+
+func DeleteProductComponent(db *sql.DB, productID int, componentID int) error {
+	if productID <= 0 || componentID <= 0 {
+		return fmt.Errorf("ID produk dan komponen tidak valid")
+	}
+
+	query := `
+		DELETE FROM product_components
+		WHERE product_id = ? AND component_id = ?
+	`
+
+	result, err := db.Exec(query, productID, componentID)
+	if err != nil {
+		return err
+	}
+
+	affect, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affect == 0 {
+		fmt.Errorf("komponen tidak ditemukan dalam resep produk")
+	}
+
+	return nil
+}
