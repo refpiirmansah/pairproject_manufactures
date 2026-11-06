@@ -1,6 +1,8 @@
 package handler
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestValidateComponentStock(t *testing.T) {
 	tests := []struct {
