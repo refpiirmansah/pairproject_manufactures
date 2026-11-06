@@ -55,6 +55,9 @@ func main() {
 				case 2:
 					// ------Memanggil sub-menu CRUD Produk------
 					cli.ProductMenu(db)
+				case 3:
+					// -----Memanggil sub-menu CRUD Pelanggan-----
+					cli.CustomerMenu(db)
 				case 0:
 					fmt.Println("Logout berhasil!")
 					break

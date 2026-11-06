@@ -209,3 +209,94 @@ func ProductMenu(db *sql.DB) {
 		}
 	}
 }
+
+func CustomerMenu(db *sql.DB) {
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		fmt.Println("\n=== Kelola Pelanggan ===")
+		fmt.Println("1. Lihat Pelanggan")
+		fmt.Println("2. Tambah Pelanggan")
+		fmt.Println("3. Ubah Pelanggan")
+		fmt.Println("4. Hapus Pelanggan")
+		fmt.Println("5. Kembali ke Dashboard")
+		fmt.Print("Pilih menu: ")
+
+		inputChoice, _ := reader.ReadString('\n')
+		choice, _ := strconv.Atoi(strings.TrimSpace(inputChoice))
+
+		switch choice {
+		case 1:
+			customers, _ := handler.GetAllCustomers(db)
+			fmt.Println("\n--- Daftar Pelanggan ---")
+			for _, c := range customers {
+				fmt.Printf("ID: %d | Nama: %s | Email: %s | Telp: %s | Alamat: %s\n", c.ID, c.Name, c.Email, c.Phone, c.Address)
+			}
+		case 2:
+			fmt.Print("Nama Pelanggan: ")
+			nameInput, _ := reader.ReadString('\n')
+			name := strings.TrimSpace(nameInput)
+
+			fmt.Print("Email: ")
+			emailInput, _ := reader.ReadString('\n')
+			email := strings.TrimSpace(emailInput)
+
+			fmt.Print("Telepon: ")
+			phoneInput, _ := reader.ReadString('\n')
+			phone := strings.TrimSpace(phoneInput)
+
+			fmt.Print("Alamat: ")
+			addrInput, _ := reader.ReadString('\n')
+			address := strings.TrimSpace(addrInput)
+
+			err := handler.CreateCustomer(db, name, email, phone, address)
+			if err != nil {
+				fmt.Println("Gagal menambahkan pelanggan:", err)
+			} else {
+				fmt.Println("Berhasil: Pelanggan baru telah ditambahkan.")
+			}
+		case 3:
+			fmt.Print("Input ID Pelanggan yang diubah: ")
+			idInput, _ := reader.ReadString('\n')
+			id, _ := strconv.Atoi(strings.TrimSpace(idInput))
+
+			fmt.Print("Nama Baru: ")
+			nameInput, _ := reader.ReadString('\n')
+			name := strings.TrimSpace(nameInput)
+
+			fmt.Print("Email Baru: ")
+			emailInput, _ := reader.ReadString('\n')
+			email := strings.TrimSpace(emailInput)
+
+			fmt.Print("Telepon Baru: ")
+			phoneInput, _ := reader.ReadString('\n')
+			phone := strings.TrimSpace(phoneInput)
+
+			fmt.Print("Alamat Baru: ")
+			addrInput, _ := reader.ReadString('\n')
+			address := strings.TrimSpace(addrInput)
+
+			err := handler.UpdateCustomer(db, id, name, email, phone, address)
+			if err != nil {
+				fmt.Println("Gagal memperbarui pelanggan:", err)
+			} else {
+				fmt.Println("Berhasil: Data pelanggan telah diperbarui.")
+			}
+		case 4:
+			fmt.Print("Input ID Pelanggan yang dihapus: ")
+			idInput, _ := reader.ReadString('\n')
+			id, _ := strconv.Atoi(strings.TrimSpace(idInput))
+
+			err := handler.DeleteCustomer(db, id)
+			if err != nil {
+				fmt.Println("Gagal menghapus pelanggan:", err)
+			} else {
+				fmt.Println("Berhasil: Pelanggan telah dihapus.")
+			}
+		case 5:
+			return
+		default:
+			fmt.Println("Pilihan tidak valid.")
+		}
+	}
+}
