@@ -430,6 +430,25 @@ func main() {
 					}
 
 					fmt.Println("Order pesanan berhasil dihapus!")
+
+				case 24:
+					var orderItemID int
+
+					fmt.Println("\n=== MULAI PERAKITAN ===")
+					fmt.Print("ID Detail Pesanan: ")
+					fmt.Scanln(&orderItemID)
+
+					assemblyID, err := handler.CreateAssembly(db, orderItemID)
+					if err != nil {
+						fmt.Println("Gagal memulai perakitan:", err)
+						continue
+					}
+
+					fmt.Printf(
+						"Perakitan berhasil dimulai! ID Perakitan: %d\n",
+						assemblyID,
+					)
+
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}

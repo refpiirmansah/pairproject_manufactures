@@ -54,13 +54,13 @@ func GetOrderItemForAssembly(
 
 func ValidateAssemblyStock(db *sql.DB, orderItemID int) error {
 	//Ambil produk dan jumlah PC dari pesanan
-	productID, orderID, err := GetOrderItemForAssembly(db, orderItemID)
+	productID, quantity, err := GetOrderItemForAssembly(db, orderItemID)
 	if err != nil {
 		return err
 	}
 
 	//periksa stock semua komponen resep PC
-	err = ValidateRecipeStock(db, productID, orderID)
+	err = ValidateRecipeStock(db, productID, quantity)
 	if err != nil {
 		return fmt.Errorf(
 			"stok komponen tidak mencukupi: %w",
@@ -76,58 +76,99 @@ func CreateAssembly(db *sql.DB, orderItemID int) (int64, error) {
 		return 0, fmt.Errorf("ID detail pesanan tidak valid")
 	}
 
-	// Ambil informasi pesanan
-	_, quantity, err := GetOrderItemForAssembly(db, orderItemID)
+	tx, err := db.Begin()
 	if err != nil {
 		return 0, err
 	}
+	defer tx.Rollback()
 
-	// Periksa ketersediaan Komponen
-	err = ValidateAssemblyStock(db, orderItemID)
-	if err != nil {
-		return 0, err
-	}
+	// Ambil detail pesanan dan kunci barisnya
+	var productID int
+	var quantity int
+	var orderStatus string
 
-	var alreadyExists bool
-	err = db.QueryRow(
-		`SELECT EXISTS (
-					SELECT 1
-					FROM assemblies
-					WHERE order_item_id = ?
-					)`,
+	err = tx.QueryRow(
+		`SELECT oi.product_id, oi.quantity, o.status
+         FROM order_items oi
+         JOIN orders o ON oi.order_id = o.id
+         WHERE oi.id = ?
+         FOR UPDATE`,
 		orderItemID,
-	).Scan(&alreadyExists)
+	).Scan(&productID, &quantity, &orderStatus)
 
+	if err == sql.ErrNoRows {
+		return 0, fmt.Errorf("detail pesanan tidak ditemukan")
+	}
 	if err != nil {
 		return 0, err
 	}
 
-	if alreadyExists {
+	if orderStatus != "processing" {
+		return 0, fmt.Errorf(
+			"pesanan harus berstatus processing",
+		)
+	}
+
+	// Cegah perakitan ganda
+	var exists bool
+
+	err = tx.QueryRow(
+		`SELECT EXISTS(
+            SELECT 1 FROM assemblies
+            WHERE order_item_id = ?
+        )`,
+		orderItemID,
+	).Scan(&exists)
+	if err != nil {
+		return 0, err
+	}
+
+	if exists {
 		return 0, fmt.Errorf(
 			"perakitan untuk detail pesanan ini sudah ada",
 		)
 	}
 
-	// Catat proses perakitan
-	query := `
-		INSERT INTO assemblies
-		(order_item_id, quantity, start_date, end_date, status)
-		VALUES (?, ?, NOW(), NULL, ?)
-	`
+	// Hitung seluruh kebutuhan komponen
+	components, err := GetAssemblyComponentNeedsTx(
+		tx,
+		productID,
+		quantity,
+	)
+	if err != nil {
+		return 0, err
+	}
 
-	result, err := db.Exec(
-		query,
+	// Buat catatan perakitan
+	result, err := tx.Exec(
+		`INSERT INTO assemblies
+            (order_item_id, quantity, start_date, end_date, status)
+         VALUES (?, ?, NOW(), NULL, ?)`,
 		orderItemID,
 		quantity,
 		"processing",
 	)
-
 	if err != nil {
 		return 0, err
 	}
 
 	assemblyID, err := result.LastInsertId()
 	if err != nil {
+		return 0, err
+	}
+
+	// Kurangi stok dan catat komponen
+	err = SaveAssemblyComponents(
+		tx,
+		assemblyID,
+		components,
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	// Simpan semua perubahan
+	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
@@ -285,7 +326,7 @@ func GetAssemblyComponentNeedsTx(tx *sql.Tx, productID int, totalPC int) ([]enti
 			return nil, err
 		}
 
-		totalNeeded, err := CalculateComponentNeeds(quantityPerPC, productID)
+		totalNeeded, err := CalculateComponentNeeds(quantityPerPC, totalPC)
 		if err != nil {
 			return nil, err
 		}

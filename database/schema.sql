@@ -89,3 +89,7 @@ CREATE TABLE assembly_components (
     FOREIGN KEY (assembly_id) REFERENCES assemblies(id) ON DELETE CASCADE,
     FOREIGN KEY (component_id) REFERENCES components(id)
 );
+
+ALTER TABLE assemblies
+    ADD CONSTRAINT uq_assemblies_order_item
+        UNIQUE (order_item_id);
