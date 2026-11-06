@@ -1,0 +1,123 @@
+package handler
+
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/refpiirmansah/pairproject_manufactures/entity"
+)
+
+func CreateOrder(db *sql.DB, customerID int) (int64, error) {
+	if customerID <= 0 {
+		return 0, fmt.Errorf("ID pelanggan tidak valid")
+	}
+
+	query := `
+		INSERT INTO orders (customer_id, order_date, status)
+		VALUES (?, ?, ?)
+	`
+
+	result, err := db.Exec(query, customerID, "pending")
+	if err != nil {
+		return 0, err
+	}
+
+	orderID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return orderID, nil
+}
+
+func CreateOrderItem(db *sql.DB, item entity.OrderItem) error {
+	if item.OrderID <= 0 || item.ProductID <= 0 {
+		return fmt.Errorf("ID pesanan atau produk tidak valid")
+	}
+
+	if item.Quantity <= 0 {
+		return fmt.Errorf("jumlah produk harus lebih dari 0")
+	}
+
+	if item.UnitPrice < 0 {
+		return fmt.Errorf("harga produk tidak boleh negatif")
+	}
+
+	query := `
+		INSERT INTO order_items (order_id, product_id, quantity, unit_price)
+		VALUES (?, ?, ?, ?)
+	`
+
+	_, err := db.Exec(query, item.OrderID, item.ProductID, item.Quantity, item.UnitPrice)
+
+	return err
+}
+
+func CreateOrderWithItem(
+	db *sql.DB,
+	customerID int,
+	productID int,
+	quantity int,
+) (int64, error) {
+	if customerID <= 0 || productID <= 0 || quantity <= 0 {
+		return 0, fmt.Errorf("data pesanan tidak valid")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	// Ambil harga produk langsung dari database
+	var price float64
+
+	err = tx.QueryRow(
+		"SELECT price FROM products WHERE id = ?",
+		productID,
+	).Scan(&price)
+	if err != nil {
+		return 0, fmt.Errorf("gagal mengambil harga produk: %w", err)
+	}
+
+	// Simpan data utama pesanan
+	result, err := tx.Exec(
+		`INSERT INTO orders (customer_id, order_date, status)
+         VALUES (?, NOW(), ?)`,
+		customerID,
+		"pending",
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	orderID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	// Simpan detail produk yang dipesan
+	_, err = tx.Exec(
+		`INSERT INTO order_items
+         (order_id, product_id, quantity, unit_price)
+         VALUES (?, ?, ?, ?)`,
+		orderID,
+		productID,
+		quantity,
+		price,
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	// Simpan kedua perubahan secara permanen
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return orderID, nil
+}
+
+//func GetAllOrders(db *sql.DB) error {
+//	query
+//}

@@ -58,6 +58,7 @@ func ShowDashboard() {
 	fmt.Println("18. Update Resep Rakitan")
 	fmt.Println("19. Delete Resep Rakitan")
 	fmt.Println("20. Cek Stok untuk Perakitan")
+	fmt.Println("21. Buat Pesanan")
 	fmt.Println("0. Logout")
 }
 
@@ -233,4 +234,23 @@ func GetUpdateProductComponentInput() (int, int, int) {
 	fmt.Scanln(&quantity)
 
 	return productID, componentID, quantity
+}
+
+func GetOrderInput() (int, int, int) {
+	var customerID int
+	var productID int
+	var quantity int
+
+	fmt.Println("\n=== BUAT PESANAN ===")
+
+	fmt.Print("ID Pelanggan: ")
+	fmt.Scanln(&customerID)
+
+	fmt.Print("ID Produk: ")
+	fmt.Scanln(&productID)
+
+	fmt.Print("Jumlah Produk: ")
+	fmt.Scanln(&quantity)
+
+	return customerID, productID, quantity
 }

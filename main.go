@@ -387,6 +387,16 @@ func main() {
 					}
 
 					fmt.Println("Stok semua komponen mencukupi untuk perakitan!")
+
+				case 21:
+					customerID, productID, quantity := cli.GetOrderInput()
+
+					orderID, err := handler.CreateOrderWithItem(db, customerID, productID, quantity)
+					if err != nil {
+						fmt.Println("Gagal membuat pesanan", err)
+						continue
+					}
+					fmt.Printf("Pesanan berhasil dibuat! ID Pesanan: %d\n", orderID)
 				default:
 					fmt.Println("Fitur belum tersedia")
 				}
