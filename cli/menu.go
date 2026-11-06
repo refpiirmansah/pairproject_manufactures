@@ -55,6 +55,7 @@ func ShowDashboard() {
 	fmt.Println("15. Hapus Pelanggan")
 	fmt.Println("16. Tambah Resep Rakitan")
 	fmt.Println("17. Lihat Resep Rakitan")
+	fmt.Println("18. Update Resep Rakitan")
 	fmt.Println("0. Logout")
 }
 
@@ -211,4 +212,23 @@ func GetProductComponentInput() entity.ProductComponent {
 	fmt.Scanln(&pc.Quantity)
 
 	return pc
+}
+
+func GetUpdateProductComponentInput() (int, int, int) {
+	var productID int
+	var componentID int
+	var quantity int
+
+	fmt.Println("\n=== UPDATE RESEP RAKITAN ===")
+
+	fmt.Print("ID Produk: ")
+	fmt.Scanln(&productID)
+
+	fmt.Print("ID Komponen: ")
+	fmt.Scanln(&componentID)
+
+	fmt.Print("Jumlah baru: ")
+	fmt.Scanln(&quantity)
+
+	return productID, componentID, quantity
 }

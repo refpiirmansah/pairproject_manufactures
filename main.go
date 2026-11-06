@@ -316,6 +316,14 @@ func main() {
 						fmt.Println("Gagal mengambil resep rakitan:", err)
 						continue
 					}
+				case 18:
+					productID, componentID, quantity := cli.GetUpdateProductComponentInput()
+					err := handler.UpdateProductComponent(db, productID, componentID, quantity)
+					if err != nil {
+						fmt.Println("Gagal memperbaharui resep rakitan:", err)
+					}
+
+					fmt.Println("Resep rakitan berhasil diperbahui!")
 
 				default:
 					fmt.Println("Fitur belum tersedia")

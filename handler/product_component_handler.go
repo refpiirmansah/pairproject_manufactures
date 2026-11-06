@@ -78,3 +78,35 @@ func GetProductComponent(db *sql.DB, productID int) error {
 
 	return nil
 }
+
+func UpdateProductComponent(db *sql.DB, productID int, componentID int, quantity int) error {
+	if productID <= 0 || componentID <= 0 {
+		return fmt.Errorf("ID produk dan komponen tidak valid")
+	}
+
+	if quantity <= 0 {
+		return fmt.Errorf("jumlah komponen harus lebih dari 0")
+	}
+
+	query := `
+		UPDATE product_components
+		SET quantity = ?
+		WHERE product_id = ? AND component_id = ?
+	`
+
+	result, err := db.Exec(query, quantity, productID, componentID)
+	if err != nil {
+		return err
+	}
+
+	affect, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affect == 0 {
+		return fmt.Errorf("resep tidak ditemukan atau jumlah tidak berubah")
+	}
+
+	return nil
+}
