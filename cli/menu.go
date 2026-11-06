@@ -50,6 +50,11 @@ func ShowDashboard() {
 	fmt.Println("10. Tambah Produk")
 	fmt.Println("11. Update Produk")
 	fmt.Println("12. Delete Produk")
+	fmt.Println("13. Tambah Pelanggan")
+	fmt.Println("14. Update Pelanggan")
+	fmt.Println("15. Hapus Pelanggan")
+	fmt.Println("16. Tambah Resep Rakitan")
+	fmt.Println("17. Lihat Resep Rakitan")
 	fmt.Println("0. Logout")
 }
 
@@ -146,4 +151,64 @@ func GetUpdateProdukInput() entity.Product {
 	fmt.Scanln(&product.Price)
 
 	return product
+}
+
+func GetCustomerInput() entity.Customer {
+	var customer entity.Customer
+
+	fmt.Println("\n=== TAMBAH PELANGGAN ===")
+
+	fmt.Print("Nama: ")
+	fmt.Scanln(&customer.Name)
+
+	fmt.Print("Email: ")
+	fmt.Scanln(&customer.Email)
+
+	fmt.Print("Telepon: ")
+	fmt.Scanln(&customer.Phone)
+
+	fmt.Print("Alamat: ")
+	fmt.Scanln(&customer.Address)
+
+	return customer
+}
+
+func GetUpdateCustomerInput() entity.Customer {
+	var customer entity.Customer
+
+	fmt.Println("\n=== UPDATE PELANGGAN ===")
+
+	fmt.Print("ID Pelanggan: ")
+	fmt.Scanln(&customer.ID)
+
+	fmt.Print("Nama baru: ")
+	fmt.Scanln(&customer.Name)
+
+	fmt.Print("Email baru: ")
+	fmt.Scanln(&customer.Email)
+
+	fmt.Print("Telepon baru: ")
+	fmt.Scanln(&customer.Phone)
+
+	fmt.Print("Alamat baru: ")
+	fmt.Scanln(&customer.Address)
+
+	return customer
+}
+
+func GetProductComponentInput() entity.ProductComponent {
+	var pc entity.ProductComponent
+
+	fmt.Println("\n=== TAMBAH RESEP RAKITAN ===")
+
+	fmt.Print("ID Produk: ")
+	fmt.Scanln(&pc.ProductID)
+
+	fmt.Print("ID Komponen: ")
+	fmt.Scanln(&pc.ComponentID)
+
+	fmt.Print("Jumlah Komponen: ")
+	fmt.Scanln(&pc.Quantity)
+
+	return pc
 }

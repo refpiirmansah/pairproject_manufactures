@@ -111,6 +111,36 @@ func main() {
 						)
 					}
 
+				case 3:
+					customers, err := handler.GetAllCustomers(db)
+					if err != nil {
+						fmt.Println("Gagal mengambil pelanggan:", err)
+						continue
+					}
+
+					fmt.Println("\n=== DAFTAR PRODUK ===")
+
+					if len(customers) == 0 {
+						fmt.Println("Belum ada data pelanggan")
+						continue
+					}
+
+					fmt.Printf(
+						"%-5s | %-20s | %-20s | %-6s | %-12s\n",
+						"ID", "Nama", "Email", "Telepon", "Alamat",
+					)
+					fmt.Println(strings.Repeat("-", 85))
+					for _, customer := range customers {
+						fmt.Printf(
+							"%-5d | %-20s | %-20s | %-6s | %s\n",
+							customer.ID,
+							customer.Name,
+							customer.Email,
+							customer.Phone,
+							customer.Address,
+						)
+					}
+
 				case 7:
 					component := cli.GetComponentInput()
 
@@ -208,6 +238,84 @@ func main() {
 					}
 
 					fmt.Println("Produk berhasil dihapus!")
+
+				case 13:
+					customer := cli.GetCustomerInput()
+
+					err := handler.CreateCustomer(db, customer)
+					if err != nil {
+						fmt.Println("Gagal menambahkan pelanggan:", err)
+						continue
+					}
+
+					fmt.Println("Pelanggan berhasil ditambahkan!")
+
+				case 14:
+					customer := cli.GetUpdateCustomerInput()
+
+					err := handler.UpdateCustomer(db, customer)
+					if err != nil {
+						fmt.Println("Gagal memperbarui pelanggan:", err)
+						continue
+					}
+
+					fmt.Println("Pelanggan berhasil diperbarui!")
+
+				case 15:
+					var id int
+					var konfirmasi string
+
+					fmt.Println("\n=== HAPUS PELANGGAN ===")
+					fmt.Print("Masukkan ID pelanggan: ")
+
+					_, err := fmt.Scanln(&id)
+					if err != nil || id <= 0 {
+						fmt.Println("ID pelanggan tidak valid")
+						continue
+					}
+
+					fmt.Printf("Yakin ingin menghapus pelanggan ID %d? (y/n): ", id)
+					_, err = fmt.Scanln(&konfirmasi)
+					if err != nil || konfirmasi != "y" {
+						fmt.Println("Penghapusan dibatalkan")
+						continue
+					}
+
+					err = handler.DeleteCustomer(db, id)
+					if err != nil {
+						fmt.Println("Gagal menghapus pelanggan:", err)
+						continue
+					}
+
+					fmt.Println("Pelanggan berhasil dihapus!")
+
+				case 16:
+					pc := cli.GetProductComponentInput()
+
+					err := handler.AddProductComponent(db, pc)
+					if err != nil {
+						fmt.Println("Gagal menambahkan resep rakitan:", err)
+						continue
+					}
+
+					fmt.Println("Resep rakitan berhasil ditambahkan!")
+
+				case 17:
+					var productID int
+					fmt.Println("\n=== LIHAT RESEP RAKITAN ===")
+					fmt.Print("Masukkan ID produk: ")
+
+					_, err := fmt.Scanln(&productID)
+					if err != nil || productID <= 0 {
+						fmt.Println("ID produk tidak valid")
+						continue
+					}
+
+					err = handler.GetProductComponent(db, productID)
+					if err != nil {
+						fmt.Println("Gagal mengambil resep rakitan:", err)
+						continue
+					}
 
 				default:
 					fmt.Println("Fitur belum tersedia")
